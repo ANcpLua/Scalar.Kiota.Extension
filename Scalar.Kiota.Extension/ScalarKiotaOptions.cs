@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Scalar.AspNetCore;
 
 namespace Scalar.Kiota.Extension;
@@ -28,6 +29,7 @@ public class ScalarKiotaOptions
     /// <summary>
     ///     Gets or sets whether to open the API documentation in a browser on startup. Defaults to false.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public bool OpenDocsOnStartup { get; set; }
 
     /// <summary>
@@ -93,6 +95,7 @@ public class ScalarKiotaOptions
     ///     Configures the application to open the API documentation in a browser on startup.
     /// </summary>
     /// <returns>The current instance for method chaining.</returns>
+    [ExcludeFromCodeCoverage]
     public ScalarKiotaOptions WithOpenDocsOnStartup()
     {
         OpenDocsOnStartup = true;

@@ -178,6 +178,28 @@ public class SdkGenerationIntegrationTests : IAsyncDisposable
     }
 
     [Test]
+    [DisplayName("IsCachedAndValidAsync_ReturnsFalse_WhenTypeScriptSdkJsMissing")]
+    public async Task IsCachedAndValidAsync_ReturnsFalse_WhenTypeScriptSdkJsMissing()
+    {
+        var options = new ScalarKiotaOptions
+        {
+            OutputPath = _testDirectory,
+            Languages = ["TypeScript"]
+        };
+
+        const string hash = "valid-hash";
+        await File.WriteAllTextAsync(Path.Combine(_testDirectory, ".spec.hash"), hash);
+        await File.WriteAllTextAsync(Path.Combine(_testDirectory, "config.js"), "export default {}");
+
+        var sut = CreateService(options);
+
+        var result = await sut.IsCachedAndValidAsync(hash);
+
+        await Assert.That(result).IsFalse();
+        await Assert.That(File.Exists(Path.Combine(_testDirectory, "sdk.js"))).IsFalse();
+    }
+
+    [Test]
     [DisplayName("EnsurePackageJsonAsync_CreatesPackageJson_WhenNotExists")]
     public async Task EnsurePackageJsonAsync_CreatesPackageJson_WhenNotExists()
     {
