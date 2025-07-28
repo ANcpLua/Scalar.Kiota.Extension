@@ -1,6 +1,7 @@
 [![.NET 10](https://img.shields.io/badge/.NET-10.0_Preview-7C3AED)](https://dotnet.microsoft.com/download/dotnet/10.0)
 [![NuGet](https://img.shields.io/nuget/v/Scalar.Kiota.Extension?label=NuGet&color=0891B2)](https://www.nuget.org/packages/Scalar.Kiota.Extension/)
 [![License](https://img.shields.io/github/license/ANcpLua/Scalar.Kiota.Extension?label=License&color=white)](https://github.com/ANcpLua/Scalar.Kiota.Extension/blob/main/LICENSE)
+[![codecov](https://codecov.io/gh/ANcpLua/Scalar.Kiota.Extension/branch/main/graph/badge.svg?token=lgxIXBnFrn)](https://codecov.io/gh/ANcpLua/Scalar.Kiota.Extension)
 
 # Scalar.Kiota.Extension
 
