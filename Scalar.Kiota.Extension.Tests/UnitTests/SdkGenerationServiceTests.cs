@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using TUnit.Assertions.AssertConditions.Throws;
 
 namespace Scalar.Kiota.Extension.Tests.UnitTests;
 
@@ -142,6 +143,36 @@ public class SdkGenerationServiceTests
         var sut = CreateService();
         await Assert.That(sut.ConfigPath).IsNotNull();
         await Assert.That(sut.ConfigPath.EndsWith("config.js")).IsTrue();
+    }
+
+    [Test]
+    [DisplayName("RunProcessAsync_ThrowsNothing_WhenProcessExitsWithZero")]
+    public async Task RunProcessAsync_ThrowsNothing_WhenProcessExitsWithZero()
+    {
+        await Assert.That(async () => 
+            await SdkGenerationService.RunProcessAsync("echo", "test")).ThrowsNothing();
+    }
+
+    [Test]
+    [DisplayName("RunProcessAsync_ThrowsInvalidOperationException_WhenProcessExitsWithNonZero")]
+    public async Task RunProcessAsync_ThrowsInvalidOperationException_WhenProcessExitsWithNonZero()
+    {
+        var exception = await Assert.That(async () => 
+            await SdkGenerationService.RunProcessAsync("sh", "-c \"exit 1\""))
+            .Throws<InvalidOperationException>();
+        
+        await Assert.That(exception?.Message).Contains("sh -c \"exit 1\" failed:");
+    }
+
+    [Test]
+    [DisplayName("RunProcessAsync_ThrowsInvalidOperationException_WithStandardError")]
+    public async Task RunProcessAsync_ThrowsInvalidOperationException_WithStandardError()
+    {
+        var exception = await Assert.That(async () => 
+            await SdkGenerationService.RunProcessAsync("sh", "-c \"echo 'Error message' >&2; exit 1\""))
+            .Throws<InvalidOperationException>();
+            
+        await Assert.That(exception?.Message).Contains("Error message");
     }
 
     private static SdkGenerationService CreateService(

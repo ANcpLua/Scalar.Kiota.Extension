@@ -67,22 +67,21 @@ internal class SdkGenerationService : IHostedService
         if (await IsCachedAndValidAsync(currentHash))
         {
             Logger.LogInformation("SDKs are up-to-date");
-            if (Options.OpenDocsOnStartup)
-                OpenBrowser($"/{Options.DocumentationPath ?? "api"}");
-            return;
         }
+        else
+        {
+            await File.WriteAllTextAsync(SpecPath, specContent);
+            await File.WriteAllTextAsync(HashPath, currentHash);
 
-        await File.WriteAllTextAsync(SpecPath, specContent);
-        await File.WriteAllTextAsync(HashPath, currentHash);
+            await EnsureKiotaInstalledAsync();
 
-        await EnsureKiotaInstalledAsync();
+            foreach (var language in Options.Languages)
+                await GenerateSdkAsync(language);
 
-        foreach (var language in Options.Languages)
-            await GenerateSdkAsync(language);
+            await EnsureConfigFileAsync();
 
-        await EnsureConfigFileAsync();
-
-        Logger.LogInformation("SDK generation completed");
+            Logger.LogInformation("SDK generation completed");
+        }
 
         if (Options.OpenDocsOnStartup)
             OpenBrowser($"/{Options.DocumentationPath ?? "api"}");
@@ -248,6 +247,7 @@ internal class SdkGenerationService : IHostedService
         await File.WriteAllTextAsync(ConfigPath, configContent);
     }
 
+    [ExcludeFromCodeCoverage]
     private async Task EnsureKiotaInstalledAsync()
     {
         try
@@ -274,7 +274,7 @@ internal class SdkGenerationService : IHostedService
         Process.Start(new ProcessStartInfo { FileName = url, UseShellExecute = true });
     }
 
-    private static async Task RunProcessAsync(string fileName, string arguments, string? workingDirectory = null)
+    internal static async Task RunProcessAsync(string fileName, string arguments, string? workingDirectory = null)
     {
         using var process = new Process();
         process.StartInfo = new ProcessStartInfo
@@ -289,7 +289,7 @@ internal class SdkGenerationService : IHostedService
         };
         process.Start();
         await process.WaitForExitAsync();
-        if (process.ExitCode != 0)
+        if (process.ExitCode is not 0)
             throw new InvalidOperationException(
                 $"{fileName} {arguments} failed: {await process.StandardError.ReadToEndAsync()}");
     }
