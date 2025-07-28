@@ -27,6 +27,8 @@ public class SdkGenerationIntegrationTests : IAsyncDisposable
             {
                 Console.WriteLine($"Failed to delete test directory {_testDirectory}: {ex.Message}");
             }
+
+        GC.SuppressFinalize(this);
     }
 
     [Test]

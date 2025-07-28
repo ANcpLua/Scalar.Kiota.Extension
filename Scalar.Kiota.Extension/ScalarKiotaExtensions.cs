@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -40,6 +41,7 @@ public static class ScalarKiotaExtensions
     /// <remarks>
     /// This method configures the Scalar UI using settings from <see cref="ScalarKiotaOptions"/> registered via <see cref="AddScalarWithKiota"/>.
     /// </remarks>
+    [ExcludeFromCodeCoverage]
     public static WebApplication MapScalarWithKiota(
         this WebApplication app,
         string pattern = "/api")

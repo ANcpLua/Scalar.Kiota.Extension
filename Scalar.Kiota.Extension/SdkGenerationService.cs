@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -178,6 +179,7 @@ internal class SdkGenerationService : IHostedService
             await File.WriteAllTextAsync(packageJsonPath, json);
     }
 
+    [ExcludeFromCodeCoverage]
     private async Task EnsureNpmDependenciesAsync(string tsPath)
     {
         var nodeModulesPath = Path.Combine(tsPath, "node_modules");
@@ -265,6 +267,7 @@ internal class SdkGenerationService : IHostedService
         return addresses?.FirstOrDefault() ?? "http://localhost:5000";
     }
 
+    [ExcludeFromCodeCoverage]
     private void OpenBrowser(string path)
     {
         var url = $"{GetServerUrl()}{path}";
