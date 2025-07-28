@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scalar.Kiota.Extension", "Scalar.Kiota.Extension\Scalar.Kiota.Extension.csproj", "{678F9962-4C8A-4838-8990-59A6F821F662}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scalar.Kiota.Extension.Tests", "Scalar.Kiota.Extension.Tests\Scalar.Kiota.Extension.Tests.csproj", "{51406047-F532-48AA-AC86-75DB4BFBE261}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApiNativeAOT", "WebApiNativeAOT\WebApiNativeAOT.csproj", "{A8F9BD67-692D-4F74-AE3E-E83FFDAED2BD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{678F9962-4C8A-4838-8990-59A6F821F662}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{678F9962-4C8A-4838-8990-59A6F821F662}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{678F9962-4C8A-4838-8990-59A6F821F662}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{678F9962-4C8A-4838-8990-59A6F821F662}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51406047-F532-48AA-AC86-75DB4BFBE261}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51406047-F532-48AA-AC86-75DB4BFBE261}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51406047-F532-48AA-AC86-75DB4BFBE261}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51406047-F532-48AA-AC86-75DB4BFBE261}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A8F9BD67-692D-4F74-AE3E-E83FFDAED2BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8F9BD67-692D-4F74-AE3E-E83FFDAED2BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8F9BD67-692D-4F74-AE3E-E83FFDAED2BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8F9BD67-692D-4F74-AE3E-E83FFDAED2BD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
