@@ -38,7 +38,7 @@ builder.Services.AddScalarWithKiota(options =>
 {
     options.WithTitle("My API")                    // Default: "{ApplicationName} API"
            .WithTheme(ScalarTheme.Saturn)          // Default: Saturn
-           .WithSdkName("MyApiClient")             // Default: "ApiClient"
+           .WithSdkName("MyApiClient")             // Default: "ApiClient" (space-free for compatibility) 
            .WithLanguages("TypeScript", "CSharp")  // Default: ["TypeScript"]
            .WithOutputPath("./custom-output")      // Default: "wwwroot/.scalar-kiota"
            .WithOpenDocsOnStartup();               // Default: false
