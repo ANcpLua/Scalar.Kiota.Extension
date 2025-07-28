@@ -3,7 +3,7 @@
 [![License](https://img.shields.io/github/license/ANcpLua/Scalar.Kiota.Extension?label=License&color=white)](https://github.com/ANcpLua/Scalar.Kiota.Extension/blob/main/LICENSE)
 [![codecov](https://codecov.io/gh/ANcpLua/Scalar.Kiota.Extension/branch/main/graph/badge.svg?token=lgxIXBnFrn)](https://codecov.io/gh/ANcpLua/Scalar.Kiota.Extension)
 
-![demogif](https://github.com/user-attachments/assets/09d06cdb-3123-4ac7-8b5e-6afe8a967467)
+![demo_gen](https://github.com/user-attachments/assets/a1a49069-b2f9-45c7-b336-ef1ab36fcaaa)
 
 # Scalar.Kiota.Extension
 
