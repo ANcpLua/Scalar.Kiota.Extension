@@ -41,7 +41,8 @@ jobs:
             -- \
             --coverage \
             --coverage-output-format cobertura \
-            --coverage-output ${{ github.workspace }}/coverage.cobertura.xml
+            --coverage-output ${{ github.workspace }}/coverage.cobertura.xml \
+            --coverage-settings ${{ github.workspace }}/coverage.runsettings
 
       - name: Upload coverage reports to Codecov
         continue-on-error: true

@@ -1,36 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RunSettings>
-  <DataCollectionRunSettings>
-    <DataCollectors>
-      <DataCollector friendlyName="Code Coverage">
-        <Configuration>
-          <CodeCoverage>
-            <ModulePaths>
-              <Include>
-                <ModulePath>.*Scalar\.Kiota\.Extension\.dll$</ModulePath>
-              </Include>
-              <Exclude>
-                <ModulePath>.*WebApiNativeAOT.*</ModulePath>
-                <ModulePath>.*Tests.*</ModulePath>
-              </Exclude>
-            </ModulePaths>
-            <Sources>
-              <Exclude>
-                <Source>.*\\obj\\.*</Source>
-                <Source>.*\.generated\.cs$</Source>
-                <Source>.*\.g\.cs$</Source>
-              </Exclude>
-            </Sources>
-            <Attributes>
-              <Exclude>
-                <Attribute>^System\.Diagnostics\.CodeAnalysis\.ExcludeFromCodeCoverageAttribute$</Attribute>
-                <Attribute>^System\.CodeDom\.Compiler\.GeneratedCodeAttribute$</Attribute>
-                <Attribute>^System\.Runtime\.CompilerServices\.CompilerGeneratedAttribute$</Attribute>
-              </Exclude>
-            </Attributes>
-          </CodeCoverage>
-        </Configuration>
-      </DataCollector>
-    </DataCollectors>
-  </DataCollectionRunSettings>
-</RunSettings>
+<Configuration>
+  <CodeCoverage>
+    <ModulePaths>
+      <Include>
+        <ModulePath>.*Scalar\.Kiota\.Extension\.dll$</ModulePath>
+      </Include>
+      <Exclude>
+        <ModulePath>.*Tests.*</ModulePath>
+        <ModulePath>.*TestAdapter.*</ModulePath>
+        <ModulePath>.*TUnit.*</ModulePath>
+        <ModulePath>.*Microsoft.*</ModulePath>
+        <ModulePath>.*System.*</ModulePath>
+      </Exclude>
+    </ModulePaths>
+    <EnableStaticNativeInstrumentation>True</EnableStaticNativeInstrumentation>
+    <EnableDynamicInstrumentation>True</EnableDynamicInstrumentation>
+  </CodeCoverage>
+</Configuration>
