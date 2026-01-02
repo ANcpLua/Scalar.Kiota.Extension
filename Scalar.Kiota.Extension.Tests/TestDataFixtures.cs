@@ -41,20 +41,6 @@ public class TestDataSources
         yield return () => ["Java", "TypeScript", "Ruby"];
     }
 
-    public static IEnumerable<(string name, ScalarTheme theme, bool flag)> SdkOptions()
-    {
-        yield return ("MyApi", ScalarTheme.Saturn, true);
-        yield return ("WeatherClient", ScalarTheme.BluePlanet, false);
-    }
-
-    public static IEnumerable<(string name, ScalarTheme theme, bool flag)> RandomSdkOptions()
-    {
-        yield return ("ApiClient", ScalarTheme.Saturn, Random.Shared.Next(2) == 0);
-        yield return ($"Client{Random.Shared.Next(100, 999)}", ScalarTheme.BluePlanet, Random.Shared.Next(2) == 0);
-        yield return ("Weather", ScalarTheme.Saturn, true);
-        yield return ("Weather", ScalarTheme.BluePlanet, false);
-    }
-
     public static IEnumerable<string> SdkNames()
     {
         yield return TestFixture.NextString(10);
@@ -144,39 +130,18 @@ public class TestDataSources
 public sealed class UniversalArgumentFormatter : ArgumentDisplayFormatter
 {
     [Pure]
-    public override bool CanHandle(object? value)
-    {
-        return value switch
-        {
-            string => true,
-            IEnumerable<string> => true,
-            object[] { Length: > 0 } arr => arr.All(x => x is string),
-            ScalarTheme => true,
-            ScalarKiotaOptions => true,
-            _ => false
-        };
-    }
+    public override bool CanHandle(object? value) =>
+        value is string or string[] or ScalarTheme or ScalarKiotaOptions;
 
     [Pure]
-    public override string FormatValue(object? value)
+    public override string FormatValue(object? value) => value switch
     {
-        return value switch
-        {
-            string s => $"'{s}'",
-            string[] a => FormatLanguages(a),
-            IEnumerable<string> e => FormatLanguages(e.ToArray()),
-            object[] arr when arr.All(x => x is string) => FormatLanguages(arr.Cast<string>().ToArray()),
-            ScalarTheme theme => theme.ToString(),
-            ScalarKiotaOptions opts => $"{opts.SdkName} ({opts.Theme})",
-            _ => throw new ArgumentException($"Unsupported type: {value?.GetType().Name ?? "null"}")
-        };
-    }
-
-    [Pure]
-    private static string FormatLanguages(params ReadOnlySpan<string> languages)
-    {
-        return languages.Length == 0 ? "[]" : $"[{string.Join(", ", languages.ToArray())}]";
-    }
+        string s => $"'{s}'",
+        string[] a => a.Length == 0 ? "[]" : $"[{string.Join(", ", a)}]",
+        ScalarTheme theme => theme.ToString(),
+        ScalarKiotaOptions opts => $"{opts.SdkName} ({opts.Theme})",
+        _ => value?.ToString() ?? "null"
+    };
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -217,7 +182,7 @@ public class TestHostApplicationLifetime : IHostApplicationLifetime
 /// <summary>
 ///     Minimal fake <see cref="IServer" /> for test scenarios.
 /// </summary>
-[DebuggerDisplay("TestServer: {GetServerUrl()}")]
+[DebuggerDisplay("TestServer")]
 public class TestServer : IServer
 {
     public TestServer()
@@ -231,34 +196,19 @@ public class TestServer : IServer
     public IFeatureCollection Features { get; }
 
     public Task StartAsync<TContext>(IHttpApplication<TContext> application,
-        CancellationToken cancellationToken) where TContext : notnull
-    {
-        return Task.CompletedTask;
-    }
+        CancellationToken cancellationToken) where TContext : notnull =>
+        Task.CompletedTask;
 
-    public Task StopAsync(CancellationToken cancellationToken)
-    {
-        return Task.CompletedTask;
-    }
+    public Task StopAsync(CancellationToken cancellationToken) =>
+        Task.CompletedTask;
 
-    public void Dispose()
-    {
-        GC.SuppressFinalize(this);
-    }
+    public void Dispose() => GC.SuppressFinalize(this);
 
     public void SetAddresses(IEnumerable<string> addresses)
     {
-        var feature = Features.Get<IServerAddressesFeature>() ?? new ServerAddressesFeature();
+        var feature = Features.Get<IServerAddressesFeature>()!;
         feature.Addresses.Clear();
         foreach (var address in addresses) feature.Addresses.Add(address);
-
-        Features.Set(feature);
-    }
-
-    [Pure]
-    private string GetServerUrl()
-    {
-        return Features.Get<IServerAddressesFeature>()?.Addresses.FirstOrDefault() ?? "http://localhost:5000";
     }
 }
 
