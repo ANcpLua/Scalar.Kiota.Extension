@@ -44,9 +44,9 @@ jobs:
             --coverage-output ${{ github.workspace }}/coverage.cobertura.xml
 
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ${{ github.workspace }}/coverage.cobertura.xml
-          fail_ci_if_error: false
-          verbose: true
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        run: |
+          curl -Os https://cli.codecov.io/latest/linux/codecov
+          chmod +x codecov
+          ./codecov upload-process --fail-on-error -t "${CODECOV_TOKEN}" -f "${{ github.workspace }}/coverage.cobertura.xml"
