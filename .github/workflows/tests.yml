@@ -38,9 +38,9 @@ jobs:
         run: |
           dotnet tool install --global dotnet-coverage || true
 
-          # Run tests with coverage collection using include filter
+          # Run tests with coverage - only include main assembly, exclude tests
           dotnet-coverage collect \
-            --include-files "**/Scalar.Kiota.Extension.dll" \
+            --include-files "Scalar.Kiota.Extension/bin/**/Scalar.Kiota.Extension.dll" \
             --output ${{ github.workspace }}/coverage.cobertura.xml \
             --output-format cobertura \
             -- dotnet run --project Scalar.Kiota.Extension.Tests/Scalar.Kiota.Extension.Tests.csproj --configuration Release

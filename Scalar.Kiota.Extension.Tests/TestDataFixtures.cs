@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using System.Net;
 using Microsoft.AspNetCore.Hosting;
@@ -14,6 +15,7 @@ namespace Scalar.Kiota.Extension.Tests;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Test Helpers                                                                                             //
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+[ExcludeFromCodeCoverage]
 public static class TestFixture
 {
     /// <summary>
@@ -32,6 +34,7 @@ public static class TestFixture
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Data Sources for Parameterized Testing                                                                   //
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+[ExcludeFromCodeCoverage]
 public class TestDataSources
 {
     public static IEnumerable<Func<string[]>> SdkLanguages()
@@ -127,6 +130,7 @@ public class TestDataSources
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Argument Formatter                                                                                       //
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+[ExcludeFromCodeCoverage]
 public sealed class UniversalArgumentFormatter : ArgumentDisplayFormatter
 {
     [Pure]
@@ -148,6 +152,7 @@ public sealed class UniversalArgumentFormatter : ArgumentDisplayFormatter
 // Test Doubles / Fakes                                                                                     //
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+[ExcludeFromCodeCoverage]
 [DebuggerDisplay("TestWebHostEnvironment: {EnvironmentName}")]
 public class TestWebHostEnvironment : IWebHostEnvironment
 {
@@ -159,6 +164,7 @@ public class TestWebHostEnvironment : IWebHostEnvironment
     public IFileProvider ContentRootFileProvider { get; set; } = new NullFileProvider();
 }
 
+[ExcludeFromCodeCoverage]
 [DebuggerDisplay("TestHostApplicationLifetime: Callbacks={RegisteredCallbacks.Count}")]
 public class TestHostApplicationLifetime : IHostApplicationLifetime
 {
@@ -182,6 +188,7 @@ public class TestHostApplicationLifetime : IHostApplicationLifetime
 /// <summary>
 ///     Minimal fake <see cref="IServer" /> for test scenarios.
 /// </summary>
+[ExcludeFromCodeCoverage]
 [DebuggerDisplay("TestServer")]
 public class TestServer : IServer
 {
