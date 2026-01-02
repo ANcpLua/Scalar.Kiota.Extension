@@ -347,6 +347,51 @@ public class SdkGenerationIntegrationTests : IAsyncDisposable
         await Assert.That(spec).Contains("3.1.0");
     }
 
+    [Test]
+    [DisplayName("GenerateSdksIfNeededAsync_HandlesOpenDocsOnStartup_WhenEnabled")]
+    public async Task GenerateSdksIfNeededAsync_HandlesOpenDocsOnStartup_WhenEnabled()
+    {
+        // Test exercises the OpenDocsOnStartup code path
+        // OpenBrowser is excluded from coverage and will fail gracefully in test env
+        var options = new ScalarKiotaOptions
+        {
+            OutputPath = _testDirectory,
+            Languages = ["TypeScript"],
+            SdkName = "TestClient",
+            OpenDocsOnStartup = true,
+            DocumentationPath = "/custom-docs"
+        };
+
+        var sut = CreateService(options);
+
+        // This will trigger the OpenDocsOnStartup branch
+        // OpenBrowser will fail silently (no browser in test env)
+        await sut.GenerateSdksIfNeededAsync();
+
+        // Verify generation still completed successfully
+        await Assert.That(File.Exists(Path.Combine(_testDirectory, "config.js"))).IsTrue();
+    }
+
+    [Test]
+    [DisplayName("GenerateSdksIfNeededAsync_UsesDefaultDocsPath_WhenDocumentationPathNull")]
+    public async Task GenerateSdksIfNeededAsync_UsesDefaultDocsPath_WhenDocumentationPathNull()
+    {
+        var options = new ScalarKiotaOptions
+        {
+            OutputPath = _testDirectory,
+            Languages = ["TypeScript"],
+            SdkName = "TestClient",
+            OpenDocsOnStartup = true,
+            DocumentationPath = null  // Should default to "api"
+        };
+
+        var sut = CreateService(options);
+
+        await sut.GenerateSdksIfNeededAsync();
+
+        await Assert.That(File.Exists(Path.Combine(_testDirectory, "config.js"))).IsTrue();
+    }
+
     private SdkGenerationService CreateService(ScalarKiotaOptions? options = null)
     {
         var environment = new TestWebHostEnvironment

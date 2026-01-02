@@ -221,4 +221,5 @@ FodyWeavers.xsd
 paket-files/
 
 # FAKE - F# Make
-.fake/
+.fake/coverage.xml
+TestResults/

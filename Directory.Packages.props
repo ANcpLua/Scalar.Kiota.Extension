@@ -17,10 +17,11 @@
     <PackageVersion Include="Scalar.AspNetCore" Version="$(ScalarVersion)" />
   </ItemGroup>
 
-  <!-- Testing Dependencies (Code coverage included in TUnit) -->
+  <!-- Testing Dependencies -->
   <ItemGroup Label="Testing">
     <PackageVersion Include="TUnit" Version="$(TUnitVersion)" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="$(DotNetVersion)" />
+    <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.1.0" />
   </ItemGroup>
 
 </Project>
