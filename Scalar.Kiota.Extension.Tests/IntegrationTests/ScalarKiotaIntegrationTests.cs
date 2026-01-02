@@ -49,4 +49,73 @@ public class ScalarKiotaIntegrationTests : IAsyncDisposable
         var sdkService = services.GetService<SdkGenerationService>();
         await Assert.That(sdkService).IsNotNull();
     }
+
+    [Test]
+    [DisplayName("MapScalarWithKiota_RedirectsRootPath_ToDocsPath")]
+    public async Task MapScalarWithKiota_RedirectsRootPath_ToDocsPath()
+    {
+        var client = _factory.CreateClient(new WebApplicationFactoryClientOptions
+        {
+            AllowAutoRedirect = false
+        });
+
+        var response = await client.GetAsync("/");
+
+        await Assert.That((int)response.StatusCode).IsEqualTo(302);
+        await Assert.That(response.Headers.Location?.ToString()).IsEqualTo("/api");
+    }
+
+    [Test]
+    [DisplayName("MapScalarWithKiota_ReturnsNotFound_ForNonMappedPath")]
+    public async Task MapScalarWithKiota_ReturnsNotFound_ForNonMappedPath()
+    {
+        var client = _factory.CreateClient();
+
+        var response = await client.GetAsync("/non-existent-path");
+
+        await Assert.That((int)response.StatusCode).IsEqualTo(404);
+    }
+}
+
+/// <summary>
+/// Integration tests for MapScalarWithKiota in Production environment
+/// </summary>
+[ArgumentDisplayFormatter<UniversalArgumentFormatter>]
+public class ScalarKiotaProductionIntegrationTests : IAsyncDisposable
+{
+    private readonly WebApplicationFactory<Program> _factory;
+
+    public ScalarKiotaProductionIntegrationTests()
+    {
+        _factory = new WebApplicationFactory<Program>()
+            .WithWebHostBuilder(builder =>
+            {
+                builder.UseEnvironment("Production");
+                builder.ConfigureServices(services =>
+                {
+                    services.AddEndpointsApiExplorer();
+                    services.AddScalarWithKiota();
+                });
+            });
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await _factory.DisposeAsync();
+    }
+
+    [Test]
+    [DisplayName("MapScalarWithKiota_DoesNotRedirect_WhenNotDevelopment")]
+    public async Task MapScalarWithKiota_DoesNotRedirect_WhenNotDevelopment()
+    {
+        var client = _factory.CreateClient(new WebApplicationFactoryClientOptions
+        {
+            AllowAutoRedirect = false
+        });
+
+        var response = await client.GetAsync("/");
+
+        // In production, root path should return 404 (no redirect configured)
+        await Assert.That((int)response.StatusCode).IsEqualTo(404);
+    }
 }

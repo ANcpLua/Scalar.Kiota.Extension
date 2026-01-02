@@ -1,7 +1,7 @@
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi;
 using Scalar.AspNetCore;
@@ -27,6 +27,7 @@ public static class ScalarKiotaExtensions
         var options = new ScalarKiotaOptions();
         configure?.Invoke(options);
         services.AddSingleton(options);
+        services.TryAddSingleton<IProcessRunner, DefaultProcessRunner>();
         services.AddSingleton<SdkGenerationService>();
         services.AddHostedService<SdkGenerationService>();
         return services;
@@ -41,7 +42,6 @@ public static class ScalarKiotaExtensions
     /// <remarks>
     /// This method configures the Scalar UI using settings from <see cref="ScalarKiotaOptions"/> registered via <see cref="AddScalarWithKiota"/>.
     /// </remarks>
-    [ExcludeFromCodeCoverage]
     public static WebApplication MapScalarWithKiota(
         this WebApplication app,
         string pattern = "/api")

@@ -292,19 +292,18 @@ public class TestHttpClientFactory : IHttpClientFactory
 /// </summary>
 public class TestMessageHandler : HttpMessageHandler
 {
+    /// <summary>
+    /// Standard OpenAPI spec content used for testing. Use this constant when pre-creating cache files.
+    /// </summary>
+    public const string StandardSpecContent = """{"openapi":"3.1.0","info":{"title":"Test","version":"1.0.0"},"paths":{}}""";
+
     protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
         CancellationToken cancellationToken)
     {
         var response = new HttpResponseMessage(HttpStatusCode.OK);
 
         if (request.RequestUri?.PathAndQuery.Contains("/openapi/v1.json") == true)
-            response.Content = new StringContent("""
-                                                 {
-                                                     "openapi": "3.1.0",
-                                                     "info": { "title": "Test API", "version": "1.0.0" },
-                                                     "paths": {}
-                                                 }
-                                                 """);
+            response.Content = new StringContent(StandardSpecContent);
 
         return Task.FromResult(response);
     }

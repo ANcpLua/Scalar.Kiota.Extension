@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Scalar.Kiota.Extension.Tests.Mocks;
 
 namespace Scalar.Kiota.Extension.Tests.UnitTests;
 
@@ -144,43 +145,14 @@ public class SdkGenerationServiceTests
         await Assert.That(sut.ConfigPath.EndsWith("config.js")).IsTrue();
     }
 
-    [Test]
-    [DisplayName("RunProcessAsync_ThrowsNothing_WhenProcessExitsWithZero")]
-    public async Task RunProcessAsync_ThrowsNothing_WhenProcessExitsWithZero()
-    {
-        await Assert.That(async () => 
-            await SdkGenerationService.RunProcessAsync("echo", "test")).ThrowsNothing();
-    }
-
-    [Test]
-    [DisplayName("RunProcessAsync_ThrowsInvalidOperationException_WhenProcessExitsWithNonZero")]
-    public async Task RunProcessAsync_ThrowsInvalidOperationException_WhenProcessExitsWithNonZero()
-    {
-        var exception = await Assert.That(async () => 
-            await SdkGenerationService.RunProcessAsync("sh", "-c \"exit 1\""))
-            .Throws<InvalidOperationException>();
-        
-        await Assert.That(exception?.Message).Contains("sh -c \"exit 1\" failed:");
-    }
-
-    [Test]
-    [DisplayName("RunProcessAsync_ThrowsInvalidOperationException_WithStandardError")]
-    public async Task RunProcessAsync_ThrowsInvalidOperationException_WithStandardError()
-    {
-        var exception = await Assert.That(async () => 
-            await SdkGenerationService.RunProcessAsync("sh", "-c \"echo 'Error message' >&2; exit 1\""))
-            .Throws<InvalidOperationException>();
-            
-        await Assert.That(exception?.Message).Contains("Error message");
-    }
-
     private static SdkGenerationService CreateService(
         IWebHostEnvironment? environment = null,
         IHostApplicationLifetime? lifetime = null,
         ILogger<SdkGenerationService>? logger = null,
         ScalarKiotaOptions? options = null,
         IHttpClientFactory? httpClientFactory = null,
-        IServer? server = null)
+        IServer? server = null,
+        IProcessRunner? processRunner = null)
     {
         return new SdkGenerationService(
             environment ?? new TestWebHostEnvironment(),
@@ -188,6 +160,7 @@ public class SdkGenerationServiceTests
             logger ?? NullLogger<SdkGenerationService>.Instance,
             options ?? new ScalarKiotaOptions(),
             httpClientFactory ?? new TestHttpClientFactory(),
-            server ?? new TestServer());
+            server ?? new TestServer(),
+            processRunner ?? new MockProcessRunner());
     }
 }

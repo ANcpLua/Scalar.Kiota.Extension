@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Scalar.Kiota.Extension.Tests.Mocks;
 
 namespace Scalar.Kiota.Extension.Tests.UnitTests;
 
@@ -66,7 +67,7 @@ public class SdkGenerationNpmTests : IAsyncDisposable
 
     private SdkGenerationService CreateService(
         ILogger<SdkGenerationService>? logger = null,
-        TestProcessRunner? processRunner = null,
+        IProcessRunner? processRunner = null,
         ScalarKiotaOptions? options = null)
     {
         var environment = new TestWebHostEnvironment
@@ -75,24 +76,13 @@ public class SdkGenerationNpmTests : IAsyncDisposable
             EnvironmentName = "Development"
         };
 
-        var service = new SdkGenerationService(
+        return new SdkGenerationService(
             environment,
             new TestHostApplicationLifetime(),
             logger ?? NullLogger<SdkGenerationService>.Instance,
             options ?? new ScalarKiotaOptions { OutputPath = _testDirectory },
             new TestHttpClientFactory(),
-            new TestServer());
-
-        if (processRunner != null)
-            TestProcessRunner.AttachToService();
-
-        return service;
-    }
-}
-
-internal class TestProcessRunner
-{
-    public static void AttachToService()
-    {
+            new TestServer(),
+            processRunner ?? new MockProcessRunner());
     }
 }

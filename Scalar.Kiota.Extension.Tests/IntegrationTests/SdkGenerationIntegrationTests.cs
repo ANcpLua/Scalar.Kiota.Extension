@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Microsoft.Extensions.Logging.Abstractions;
+using Scalar.Kiota.Extension.Tests.Mocks;
 
 namespace Scalar.Kiota.Extension.Tests.IntegrationTests;
 
@@ -62,25 +63,22 @@ public class SdkGenerationIntegrationTests : IAsyncDisposable
             SdkName = "TestClient"
         };
 
-        const string expectedSpecContent = """
-                                           {
-                                               "openapi": "3.1.0",
-                                               "info": { "title": "Test API", "version": "1.0.0" },
-                                               "paths": {}
-                                           }
-                                           """;
-        var expectedHash = SdkGenerationService.ComputeHash(expectedSpecContent);
+        // Use TestMessageHandler.StandardSpecContent for hash match with downloaded spec
+        var expectedHash = SdkGenerationService.ComputeHash(TestMessageHandler.StandardSpecContent);
 
-        await File.WriteAllTextAsync(Path.Combine(_testDirectory, "openapi.json"), expectedSpecContent);
+        await File.WriteAllTextAsync(Path.Combine(_testDirectory, "openapi.json"), TestMessageHandler.StandardSpecContent);
         await File.WriteAllTextAsync(Path.Combine(_testDirectory, ".spec.hash"), expectedHash);
         await File.WriteAllTextAsync(Path.Combine(_testDirectory, "config.js"), "export default {}");
         Directory.CreateDirectory(Path.Combine(_testDirectory, "typescript"));
         await File.WriteAllTextAsync(Path.Combine(_testDirectory, "sdk.js"), "// bundled");
 
-        var sut = CreateService(options);
+        var mockRunner = new MockProcessRunner();
+        var sut = CreateService(options, mockRunner);
 
         await sut.GenerateSdksIfNeededAsync();
 
+        // No process calls should be made when cache is valid
+        await Assert.That(mockRunner.RunCalls.Count).IsEqualTo(0);
         await Assert.That(await File.ReadAllTextAsync(Path.Combine(_testDirectory, ".spec.hash")))
             .IsEqualTo(expectedHash);
     }
@@ -348,11 +346,142 @@ public class SdkGenerationIntegrationTests : IAsyncDisposable
     }
 
     [Test]
-    [DisplayName("GenerateSdksIfNeededAsync_HandlesOpenDocsOnStartup_WhenEnabled")]
-    public async Task GenerateSdksIfNeededAsync_HandlesOpenDocsOnStartup_WhenEnabled()
+    [DisplayName("OpenBrowser_CallsProcessRunner_WithCorrectUrl")]
+    public async Task OpenBrowser_CallsProcessRunner_WithCorrectUrl()
     {
-        // Test exercises the OpenDocsOnStartup code path
-        // OpenBrowser is excluded from coverage and will fail gracefully in test env
+        var options = new ScalarKiotaOptions
+        {
+            OutputPath = _testDirectory
+        };
+
+        var mockRunner = new MockProcessRunner();
+        var sut = CreateService(options, mockRunner);
+
+        sut.OpenBrowser("/test-path");
+
+        await Assert.That(mockRunner.OpenUrlCalls.Count).IsEqualTo(1);
+        await Assert.That(mockRunner.OpenUrlCalls[0]).Contains("/test-path");
+    }
+
+    [Test]
+    [DisplayName("EnsureKiotaInstalledAsync_ChecksKiotaVersion_BeforeInstalling")]
+    public async Task EnsureKiotaInstalledAsync_ChecksKiotaVersion_BeforeInstalling()
+    {
+        var options = new ScalarKiotaOptions
+        {
+            OutputPath = _testDirectory
+        };
+
+        var mockRunner = new MockProcessRunner();
+        var sut = CreateService(options, mockRunner);
+
+        await sut.EnsureKiotaInstalledAsync();
+
+        await Assert.That(mockRunner.RunCalls.Count).IsEqualTo(1);
+        await Assert.That(mockRunner.RunCalls[0].FileName).IsEqualTo("kiota");
+        await Assert.That(mockRunner.RunCalls[0].Arguments).IsEqualTo("--version");
+    }
+
+    [Test]
+    [DisplayName("EnsureKiotaInstalledAsync_InstallsKiota_WhenNotFound")]
+    public async Task EnsureKiotaInstalledAsync_InstallsKiota_WhenNotFound()
+    {
+        var options = new ScalarKiotaOptions
+        {
+            OutputPath = _testDirectory
+        };
+
+        var mockRunner = new MockProcessRunner { ThrowOnFileName = "kiota" };
+        var sut = CreateService(options, mockRunner);
+
+        await sut.EnsureKiotaInstalledAsync();
+
+        await Assert.That(mockRunner.RunCalls.Count).IsEqualTo(2);
+        await Assert.That(mockRunner.RunCalls[1].FileName).IsEqualTo("dotnet");
+        await Assert.That(mockRunner.RunCalls[1].Arguments).Contains("tool install -g Microsoft.OpenApi.Kiota");
+    }
+
+    [Test]
+    [DisplayName("EnsureNpmDependenciesAsync_SkipsInstall_WhenNodeModulesUpToDate")]
+    public async Task EnsureNpmDependenciesAsync_SkipsInstall_WhenNodeModulesUpToDate()
+    {
+        var options = new ScalarKiotaOptions
+        {
+            OutputPath = _testDirectory
+        };
+
+        var tsPath = Path.Combine(_testDirectory, "typescript");
+        Directory.CreateDirectory(tsPath);
+        await File.WriteAllTextAsync(Path.Combine(tsPath, "package.json"), "{}");
+
+        // Create package-lock.json with a newer timestamp than package.json
+        await Task.Delay(100);
+        await File.WriteAllTextAsync(Path.Combine(tsPath, "package-lock.json"), "{}");
+        Directory.CreateDirectory(Path.Combine(tsPath, "node_modules"));
+
+        var mockRunner = new MockProcessRunner();
+        var sut = CreateService(options, mockRunner);
+
+        await sut.EnsureNpmDependenciesAsync(tsPath);
+
+        // No npm calls should be made
+        await Assert.That(mockRunner.RunCalls.Count).IsEqualTo(0);
+    }
+
+    [Test]
+    [DisplayName("EnsureNpmDependenciesAsync_RunsNpmInstall_WhenNoLockFile")]
+    public async Task EnsureNpmDependenciesAsync_RunsNpmInstall_WhenNoLockFile()
+    {
+        var options = new ScalarKiotaOptions
+        {
+            OutputPath = _testDirectory
+        };
+
+        var tsPath = Path.Combine(_testDirectory, "typescript");
+        Directory.CreateDirectory(tsPath);
+        await File.WriteAllTextAsync(Path.Combine(tsPath, "package.json"), "{}");
+
+        var mockRunner = new MockProcessRunner();
+        var sut = CreateService(options, mockRunner);
+
+        await sut.EnsureNpmDependenciesAsync(tsPath);
+
+        await Assert.That(mockRunner.RunCalls.Count).IsEqualTo(1);
+        await Assert.That(mockRunner.RunCalls[0].FileName).IsEqualTo("npm");
+        await Assert.That(mockRunner.RunCalls[0].Arguments).Contains("install");
+    }
+
+    [Test]
+    [DisplayName("EnsureNpmDependenciesAsync_RunsNpmCi_WhenLockFileExists")]
+    public async Task EnsureNpmDependenciesAsync_RunsNpmCi_WhenLockFileExists()
+    {
+        var options = new ScalarKiotaOptions
+        {
+            OutputPath = _testDirectory
+        };
+
+        var tsPath = Path.Combine(_testDirectory, "typescript");
+        Directory.CreateDirectory(tsPath);
+        await File.WriteAllTextAsync(Path.Combine(tsPath, "package-lock.json"), "{}");
+
+        // Create package.json with a newer timestamp than lock file
+        await Task.Delay(100);
+        await File.WriteAllTextAsync(Path.Combine(tsPath, "package.json"), "{}");
+
+        var mockRunner = new MockProcessRunner();
+        var sut = CreateService(options, mockRunner);
+
+        await sut.EnsureNpmDependenciesAsync(tsPath);
+
+        await Assert.That(mockRunner.RunCalls.Count).IsEqualTo(1);
+        await Assert.That(mockRunner.RunCalls[0].FileName).IsEqualTo("npm");
+        await Assert.That(mockRunner.RunCalls[0].Arguments).Contains("ci");
+    }
+
+    [Test]
+    [DisplayName("GenerateSdksIfNeededAsync_OpensDocsOnStartup_WhenEnabled")]
+    public async Task GenerateSdksIfNeededAsync_OpensDocsOnStartup_WhenEnabled()
+    {
         var options = new ScalarKiotaOptions
         {
             OutputPath = _testDirectory,
@@ -362,14 +491,20 @@ public class SdkGenerationIntegrationTests : IAsyncDisposable
             DocumentationPath = "/custom-docs"
         };
 
-        var sut = CreateService(options);
+        // Pre-create cache to skip generation - use TestMessageHandler.StandardSpecContent for hash match
+        var hash = SdkGenerationService.ComputeHash(TestMessageHandler.StandardSpecContent);
+        await File.WriteAllTextAsync(Path.Combine(_testDirectory, "openapi.json"), TestMessageHandler.StandardSpecContent);
+        await File.WriteAllTextAsync(Path.Combine(_testDirectory, ".spec.hash"), hash);
+        await File.WriteAllTextAsync(Path.Combine(_testDirectory, "config.js"), "export default {}");
+        await File.WriteAllTextAsync(Path.Combine(_testDirectory, "sdk.js"), "// bundled");
 
-        // This will trigger the OpenDocsOnStartup branch
-        // OpenBrowser will fail silently (no browser in test env)
+        var mockRunner = new MockProcessRunner();
+        var sut = CreateService(options, mockRunner);
+
         await sut.GenerateSdksIfNeededAsync();
 
-        // Verify generation still completed successfully
-        await Assert.That(File.Exists(Path.Combine(_testDirectory, "config.js"))).IsTrue();
+        await Assert.That(mockRunner.OpenUrlCalls.Count).IsEqualTo(1);
+        await Assert.That(mockRunner.OpenUrlCalls[0]).Contains("/custom-docs");
     }
 
     [Test]
@@ -382,17 +517,26 @@ public class SdkGenerationIntegrationTests : IAsyncDisposable
             Languages = ["TypeScript"],
             SdkName = "TestClient",
             OpenDocsOnStartup = true,
-            DocumentationPath = null  // Should default to "api"
+            DocumentationPath = null
         };
 
-        var sut = CreateService(options);
+        // Pre-create cache to skip generation - use TestMessageHandler.StandardSpecContent for hash match
+        var hash = SdkGenerationService.ComputeHash(TestMessageHandler.StandardSpecContent);
+        await File.WriteAllTextAsync(Path.Combine(_testDirectory, "openapi.json"), TestMessageHandler.StandardSpecContent);
+        await File.WriteAllTextAsync(Path.Combine(_testDirectory, ".spec.hash"), hash);
+        await File.WriteAllTextAsync(Path.Combine(_testDirectory, "config.js"), "export default {}");
+        await File.WriteAllTextAsync(Path.Combine(_testDirectory, "sdk.js"), "// bundled");
+
+        var mockRunner = new MockProcessRunner();
+        var sut = CreateService(options, mockRunner);
 
         await sut.GenerateSdksIfNeededAsync();
 
-        await Assert.That(File.Exists(Path.Combine(_testDirectory, "config.js"))).IsTrue();
+        await Assert.That(mockRunner.OpenUrlCalls.Count).IsEqualTo(1);
+        await Assert.That(mockRunner.OpenUrlCalls[0]).Contains("/api");
     }
 
-    private SdkGenerationService CreateService(ScalarKiotaOptions? options = null)
+    private SdkGenerationService CreateService(ScalarKiotaOptions? options = null, IProcessRunner? processRunner = null)
     {
         var environment = new TestWebHostEnvironment
         {
@@ -406,6 +550,7 @@ public class SdkGenerationIntegrationTests : IAsyncDisposable
             NullLogger<SdkGenerationService>.Instance,
             options ?? new ScalarKiotaOptions(),
             new TestHttpClientFactory(),
-            new TestServer());
+            new TestServer(),
+            processRunner ?? new DefaultProcessRunner());
     }
 }

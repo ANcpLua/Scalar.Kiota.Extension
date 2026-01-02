@@ -1,5 +1,3 @@
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -19,7 +17,8 @@ internal class SdkGenerationService : IHostedService
         ILogger<SdkGenerationService> logger,
         ScalarKiotaOptions options,
         IHttpClientFactory httpClientFactory,
-        IServer server)
+        IServer server,
+        IProcessRunner processRunner)
     {
         Environment = environment;
         Lifetime = lifetime;
@@ -27,6 +26,7 @@ internal class SdkGenerationService : IHostedService
         Options = options;
         HttpClientFactory = httpClientFactory;
         Server = server;
+        ProcessRunner = processRunner;
     }
 
     private IWebHostEnvironment Environment { get; }
@@ -35,6 +35,7 @@ internal class SdkGenerationService : IHostedService
     private ScalarKiotaOptions Options { get; }
     private IHttpClientFactory HttpClientFactory { get; }
     private IServer Server { get; }
+    private IProcessRunner ProcessRunner { get; }
 
     public string RootPath =>
         Options.OutputPath ?? Path.Combine(Environment.ContentRootPath, "wwwroot", ".scalar-kiota");
@@ -135,7 +136,7 @@ internal class SdkGenerationService : IHostedService
     {
         var outputDir = GetSdkPath(language);
 
-        await RunProcessAsync("kiota",
+        await ProcessRunner.RunAsync("kiota",
             $"generate --openapi \"{SpecPath}\" " +
             $"--language {language} " +
             $"--class-name {Options.SdkName} " +
@@ -178,8 +179,7 @@ internal class SdkGenerationService : IHostedService
             await File.WriteAllTextAsync(packageJsonPath, json);
     }
 
-    [ExcludeFromCodeCoverage]
-    private async Task EnsureNpmDependenciesAsync(string tsPath)
+    internal async Task EnsureNpmDependenciesAsync(string tsPath)
     {
         var nodeModulesPath = Path.Combine(tsPath, "node_modules");
         var packageLockPath = Path.Combine(tsPath, "package-lock.json");
@@ -198,7 +198,7 @@ internal class SdkGenerationService : IHostedService
 
         Logger.LogInformation("Installing NPM dependencies...");
         var command = File.Exists(packageLockPath) ? "ci" : "install";
-        await RunProcessAsync("npm", $"{command} --no-audit --no-fund", tsPath);
+        await ProcessRunner.RunAsync("npm", $"{command} --no-audit --no-fund", tsPath);
     }
 
     public async Task BundleWithEsbuildAsync(string tsPath)
@@ -210,7 +210,7 @@ internal class SdkGenerationService : IHostedService
         var outputPath = Path.Combine(RootPath, "sdk.js");
 
         Logger.LogInformation("Bundling TypeScript SDK...");
-        await RunProcessAsync("npx",
+        await ProcessRunner.RunAsync("npx",
             $"--yes esbuild \"{entry}\" --bundle --format=esm --platform=browser " +
             "--target=es2020 --minify --tree-shaking=true " +
             $"--outfile=\"{outputPath}\"",
@@ -247,17 +247,16 @@ internal class SdkGenerationService : IHostedService
         await File.WriteAllTextAsync(ConfigPath, configContent);
     }
 
-    [ExcludeFromCodeCoverage]
-    private async Task EnsureKiotaInstalledAsync()
+    internal async Task EnsureKiotaInstalledAsync()
     {
         try
         {
-            await RunProcessAsync("kiota", "--version");
+            await ProcessRunner.RunAsync("kiota", "--version");
         }
         catch
         {
             Logger.LogWarning("Installing Kiota CLI...");
-            await RunProcessAsync("dotnet", "tool install -g Microsoft.OpenApi.Kiota");
+            await ProcessRunner.RunAsync("dotnet", "tool install -g Microsoft.OpenApi.Kiota");
         }
     }
 
@@ -267,30 +266,9 @@ internal class SdkGenerationService : IHostedService
         return addresses?.FirstOrDefault() ?? "http://localhost:5000";
     }
 
-    [ExcludeFromCodeCoverage]
-    private void OpenBrowser(string path)
+    internal void OpenBrowser(string path)
     {
         var url = $"{GetServerUrl()}{path}";
-        Process.Start(new ProcessStartInfo { FileName = url, UseShellExecute = true });
-    }
-
-    internal static async Task RunProcessAsync(string fileName, string arguments, string? workingDirectory = null)
-    {
-        using var process = new Process();
-        process.StartInfo = new ProcessStartInfo
-        {
-            FileName = fileName,
-            Arguments = arguments,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            UseShellExecute = false,
-            CreateNoWindow = true,
-            WorkingDirectory = workingDirectory ?? Directory.GetCurrentDirectory()
-        };
-        process.Start();
-        await process.WaitForExitAsync();
-        if (process.ExitCode is not 0)
-            throw new InvalidOperationException(
-                $"{fileName} {arguments} failed: {await process.StandardError.ReadToEndAsync()}");
+        ProcessRunner.OpenUrl(url);
     }
 }
