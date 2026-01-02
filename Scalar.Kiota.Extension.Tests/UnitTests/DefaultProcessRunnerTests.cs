@@ -34,11 +34,25 @@ public class DefaultProcessRunnerTests
     }
 
     [Test]
-    [DisplayName("RunAsync_UsesWorkingDirectory_WhenSpecified")]
-    public async Task RunAsync_UsesWorkingDirectory_WhenSpecified()
+    [DisplayName("RunAsync_ExecutesInSpecifiedWorkingDirectory")]
+    public async Task RunAsync_ExecutesInSpecifiedWorkingDirectory()
     {
         var sut = new DefaultProcessRunner();
-        var tempDir = Path.GetTempPath();
-        await Assert.That(async () => await sut.RunAsync("pwd", "", tempDir)).ThrowsNothing();
+        var uniqueDir = Path.Combine(Path.GetTempPath(), $"test-{Guid.NewGuid()}");
+        Directory.CreateDirectory(uniqueDir);
+
+        try
+        {
+            // Create a marker file to verify we're in the right directory
+            var markerFile = Path.Combine(uniqueDir, "marker.txt");
+            await File.WriteAllTextAsync(markerFile, "test");
+
+            // This command will fail if marker.txt doesn't exist in working directory
+            await Assert.That(async () => await sut.RunAsync("cat", "marker.txt", uniqueDir)).ThrowsNothing();
+        }
+        finally
+        {
+            Directory.Delete(uniqueDir, true);
+        }
     }
 }
