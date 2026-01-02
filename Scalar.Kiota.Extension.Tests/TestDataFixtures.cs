@@ -225,7 +225,7 @@ public class TestServer : IServer
 public class ServerAddressesFeature : IServerAddressesFeature
 {
     public ICollection<string> Addresses { get; } = new List<string>();
-    public bool PreferHostingUrls { get; set; }
+    public bool PreferHostingUrls { get; set; } = true;  // Required by interface
 }
 
 /// <summary>
@@ -252,13 +252,9 @@ public class TestMessageHandler : HttpMessageHandler
     public const string StandardSpecContent = """{"openapi":"3.1.0","info":{"title":"Test","version":"1.0.0"},"paths":{}}""";
 
     protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
-        CancellationToken cancellationToken)
-    {
-        var response = new HttpResponseMessage(HttpStatusCode.OK);
-
-        if (request.RequestUri?.PathAndQuery.Contains("/openapi/v1.json") == true)
-            response.Content = new StringContent(StandardSpecContent);
-
-        return Task.FromResult(response);
-    }
+        CancellationToken cancellationToken) =>
+        Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new StringContent(StandardSpecContent)
+        });
 }
