@@ -38,14 +38,15 @@ jobs:
         run: |
           dotnet run --project Scalar.Kiota.Extension.Tests/Scalar.Kiota.Extension.Tests.csproj \
             --configuration Release \
+            -- \
             --coverage \
             --coverage-output-format cobertura \
-            --coverage-output ./TestResults/coverage.cobertura.xml \
-            --results-directory ./TestResults
+            --coverage-output ${{ github.workspace }}/coverage.cobertura.xml
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./TestResults/coverage.cobertura.xml
+          files: ${{ github.workspace }}/coverage.cobertura.xml
           fail_ci_if_error: false
+          verbose: true
