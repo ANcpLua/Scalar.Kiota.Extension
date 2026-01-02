@@ -43,15 +43,14 @@ public class TodosApiIntegrationTests
 
     [Test]
     [DisplayName("GET /todos - Returns all todos")]
-    public async Task GetTodos_ReturnsAllTodos()
+    public async Task GetTodos_ReturnsAllTodos(CancellationToken cancellationToken)
     {
         var client = _factory.CreateClient();
 
-        var response = await client.GetAsync("/todos", TestContext.Current!.CancellationToken);
+        var response = await client.GetAsync("/todos", cancellationToken);
 
         await Assert.That(response.IsSuccessStatusCode).IsTrue();
-        var todos = await response.Content.ReadFromJsonAsync<Todo[]>(
-            TestContext.Current.CancellationToken);
+        var todos = await response.Content.ReadFromJsonAsync<Todo[]>(cancellationToken);
 
         await Assert.That(todos).IsNotNull();
         await Assert.That(todos!.Length).IsGreaterThanOrEqualTo(5);
@@ -62,15 +61,14 @@ public class TodosApiIntegrationTests
     [Arguments(1, "Walk the dog")]
     [Arguments(5, "Clean the car")]
     [DisplayName("GET /todos/$id - Returns correct todo (id: $id)")]
-    public async Task GetTodoById_ReturnsCorrectTodo(int id, string expectedTitle)
+    public async Task GetTodoById_ReturnsCorrectTodo(int id, string expectedTitle, CancellationToken cancellationToken)
     {
         var client = _factory.CreateClient();
 
-        var response = await client.GetAsync($"/todos/{id}", TestContext.Current!.CancellationToken);
+        var response = await client.GetAsync($"/todos/{id}", cancellationToken);
 
         await Assert.That(response.IsSuccessStatusCode).IsTrue();
-        var todo = await response.Content.ReadFromJsonAsync<Todo>(
-            TestContext.Current.CancellationToken);
+        var todo = await response.Content.ReadFromJsonAsync<Todo>(cancellationToken);
 
         await Assert.That(todo).IsNotNull();
         await Assert.That(todo!.Id).IsEqualTo(id);
@@ -80,11 +78,11 @@ public class TodosApiIntegrationTests
     [Test]
     [Arguments(9999)]
     [DisplayName("GET /todos/$id - Non-existent todo returns 404 (id: $id)")]
-    public async Task GetTodoById_NonExistent_ReturnsNotFound(int id)
+    public async Task GetTodoById_NonExistent_ReturnsNotFound(int id, CancellationToken cancellationToken)
     {
         var client = _factory.CreateClient();
 
-        var response = await client.GetAsync($"/todos/{id}", TestContext.Current!.CancellationToken);
+        var response = await client.GetAsync($"/todos/{id}", cancellationToken);
 
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NotFound);
     }

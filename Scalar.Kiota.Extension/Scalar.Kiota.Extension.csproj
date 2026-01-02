@@ -1,41 +1,33 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net10.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-        <EnablePreviewFeatures>true</EnablePreviewFeatures>
-        <LangVersion>preview</LangVersion>
+  <PropertyGroup>
+    <PackageId>Scalar.Kiota.Extension</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Alexander Nachtmann</Authors>
+    <Description>Opinionated integration of OpenAPI 3.1 + Kiota SDK generation + Scalar documentation for .NET 10 minimal APIs with native AOT support</Description>
+    <PackageTags>scalar;kiota;openapi;sdk;codegen;aspnetcore;aot;minimal-api;openapi-3.1;documentation;api-client</PackageTags>
+    <RepositoryUrl>https://github.com/ANcpLua/Scalar.Kiota.Extension</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageProjectUrl>https://github.com/ANcpLua/Scalar.Kiota.Extension</PackageProjectUrl>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <DebugType>portable</DebugType>
+  </PropertyGroup>
 
-        <PackageId>Scalar.Kiota.Extension</PackageId>
-        <Version>1.0.0-preview.6</Version>
-        <Authors>Alexander Nachtmann</Authors>
-        <Description>Opinionated integration of OpenAPI 3.1.1 + Kiota SDK generation + Scalar documentation for .NET 10 minimal APIs with native AOT support</Description>
-        <PackageTags>scalar;kiota;openapi;sdk;codegen;aspnetcore;aot;minimal-api;openapi-3.1;documentation;api-client,</PackageTags>
-        <RepositoryUrl>https://github.com/ANcpLua/Scalar.Kiota.Extension</RepositoryUrl>
-        <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageReadmeFile>README.md</PackageReadmeFile>
-        <PackageProjectUrl>https://github.com/ANcpLua/Scalar.Kiota.Extension</PackageProjectUrl>
-        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-        <IncludeSymbols>true</IncludeSymbols>
-        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-        <DebugType>portable</DebugType>
-    </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+    <PackageReference Include="Scalar.AspNetCore" />
+  </ItemGroup>
 
-    <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.1"/>
-        <PackageReference Include="Scalar.AspNetCore" Version="2.6.4"/>
-    </ItemGroup>
+  <ItemGroup>
+    <None Include="..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
 
-    <ItemGroup>
-        <None Include="..\README.md" Pack="true" PackagePath="\"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <InternalsVisibleTo Include="Scalar.Kiota.Extension.Tests"/>
-    </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Scalar.Kiota.Extension.Tests" />
+  </ItemGroup>
 
 </Project>

@@ -1,0 +1,26 @@
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+  </PropertyGroup>
+
+  <!-- Version Variables -->
+  <PropertyGroup>
+    <DotNetVersion>10.0.1</DotNetVersion>
+    <ScalarVersion>2.11.10</ScalarVersion>
+    <TUnitVersion>1.7.7</TUnitVersion>
+  </PropertyGroup>
+
+  <!-- Production Dependencies -->
+  <ItemGroup Label="Production">
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="$(DotNetVersion)" />
+    <PackageVersion Include="Scalar.AspNetCore" Version="$(ScalarVersion)" />
+  </ItemGroup>
+
+  <!-- Testing Dependencies (Code coverage included in TUnit) -->
+  <ItemGroup Label="Testing">
+    <PackageVersion Include="TUnit" Version="$(TUnitVersion)" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="$(DotNetVersion)" />
+  </ItemGroup>
+
+</Project>

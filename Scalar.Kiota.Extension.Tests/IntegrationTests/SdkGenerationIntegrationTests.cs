@@ -224,7 +224,7 @@ public class SdkGenerationIntegrationTests : IAsyncDisposable
 
         await Assert.That(packageJson).IsNotNull();
         await Assert.That(packageJson!.Name).IsEqualTo("testclient");
-        await Assert.That(packageJson.Dependencies).HasCount().EqualTo(6);
+        await Assert.That(packageJson.Dependencies).Count().IsEqualTo(6);
         await Assert.That(packageJson.Dependencies.ContainsKey("@microsoft/kiota-abstractions")).IsTrue();
     }
 

@@ -1,4 +1,4 @@
-[![.NET 10](https://img.shields.io/badge/.NET-10.0_Preview-7C3AED)](https://dotnet.microsoft.com/download/dotnet/10.0)
+[![.NET 10](https://img.shields.io/badge/.NET-10.0-7C3AED)](https://dotnet.microsoft.com/download/dotnet/10.0)
 [![NuGet](https://img.shields.io/nuget/v/Scalar.Kiota.Extension?label=NuGet&color=0891B2)](https://www.nuget.org/packages/Scalar.Kiota.Extension/)
 [![License](https://img.shields.io/github/license/ANcpLua/Scalar.Kiota.Extension?label=License&color=white)](https://github.com/ANcpLua/Scalar.Kiota.Extension/blob/main/LICENSE)
 [![codecov](https://codecov.io/gh/ANcpLua/Scalar.Kiota.Extension/branch/main/graph/badge.svg?token=lgxIXBnFrn)](https://codecov.io/gh/ANcpLua/Scalar.Kiota.Extension)
@@ -12,7 +12,7 @@ Automates Kiota SDK generation and integrates it with Scalar API documentation f
 ## Installation
 
 ```bash
-dotnet add package Scalar.Kiota.Extension --prerelease
+dotnet add package Scalar.Kiota.Extension
 ```
 
 ## Quick Start
@@ -38,11 +38,11 @@ builder.Services.AddScalarWithKiota(options =>
 {
     options.WithTitle("My API")                    // Default: "{ApplicationName} API"
            .WithTheme(ScalarTheme.Saturn)          // Default: Saturn
-           .WithSdkName("MyApiClient")             // Default: "ApiClient" (space-free for compatibility) 
+           .WithSdkName("MyApiClient")             // Default: "ApiClient" (space-free for compatibility)
            .WithLanguages("TypeScript", "CSharp")  // Default: ["TypeScript"]
            .WithOutputPath("./custom-output")      // Default: "wwwroot/.scalar-kiota"
            .WithOpenDocsOnStartup();               // Default: false
-           
+
     options.BundleTypeScript = true;               // Default: true
     options.DocumentationPath = "/docs";           // Default: null (uses pattern)
 });
@@ -86,8 +86,8 @@ wwwroot/.scalar-kiota/
 
 ## Requirements
 
-- Download [.NET 10.0 Preview](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)
-- Install [Node.js](https://nodejs.org/) (for TypeScript bundling)
+- [.NET 10.0](https://dotnet.microsoft.com/en-us/download/dotnet/10.0) or later
+- [Node.js](https://nodejs.org/) (for TypeScript bundling)
 
 ## License
 This project is licensed under the [MIT License](LICENSE).

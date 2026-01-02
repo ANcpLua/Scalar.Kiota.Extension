@@ -1,0 +1,7 @@
+<Project>
+  <!-- Exclude generated code from coverage -->
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute"
+                       Condition="'$(GeneratedAssemblyInfoFile)' != ''" />
+  </ItemGroup>
+</Project>

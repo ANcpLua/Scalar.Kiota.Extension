@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using TUnit.Assertions.AssertConditions.Throws;
 
 namespace Scalar.Kiota.Extension.Tests.UnitTests;
 
