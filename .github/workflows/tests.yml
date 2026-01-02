@@ -24,10 +24,10 @@ jobs:
         run: dotnet tool install -g Microsoft.OpenApi.Kiota
 
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore Scalar.Kiota.Extension.slnx
 
       - name: Build
-        run: dotnet build --no-restore --configuration Release
+        run: dotnet build Scalar.Kiota.Extension.slnx --no-restore --configuration Release
 
       - name: Run tests with coverage
         run: |
@@ -35,7 +35,8 @@ jobs:
             --configuration Release \
             --coverage \
             --coverage-output-format cobertura \
-            --coverage-output ./TestResults/coverage.cobertura.xml
+            --coverage-output ./TestResults/coverage.cobertura.xml \
+            --results-directory ./TestResults
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
