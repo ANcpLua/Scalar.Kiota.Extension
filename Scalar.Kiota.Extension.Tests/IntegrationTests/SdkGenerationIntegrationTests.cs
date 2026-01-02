@@ -346,24 +346,6 @@ public class SdkGenerationIntegrationTests : IAsyncDisposable
     }
 
     [Test]
-    [DisplayName("OpenBrowser_CallsProcessRunner_WithCorrectUrl")]
-    public async Task OpenBrowser_CallsProcessRunner_WithCorrectUrl()
-    {
-        var options = new ScalarKiotaOptions
-        {
-            OutputPath = _testDirectory
-        };
-
-        var mockRunner = new MockProcessRunner();
-        var sut = CreateService(options, mockRunner);
-
-        sut.OpenBrowser("/test-path");
-
-        await Assert.That(mockRunner.OpenUrlCalls.Count).IsEqualTo(1);
-        await Assert.That(mockRunner.OpenUrlCalls[0]).Contains("/test-path");
-    }
-
-    [Test]
     [DisplayName("EnsureKiotaInstalledAsync_ChecksKiotaVersion_BeforeInstalling")]
     public async Task EnsureKiotaInstalledAsync_ChecksKiotaVersion_BeforeInstalling()
     {
@@ -476,64 +458,6 @@ public class SdkGenerationIntegrationTests : IAsyncDisposable
         await Assert.That(mockRunner.RunCalls.Count).IsEqualTo(1);
         await Assert.That(mockRunner.RunCalls[0].FileName).IsEqualTo("npm");
         await Assert.That(mockRunner.RunCalls[0].Arguments).Contains("ci");
-    }
-
-    [Test]
-    [DisplayName("GenerateSdksIfNeededAsync_OpensDocsOnStartup_WhenEnabled")]
-    public async Task GenerateSdksIfNeededAsync_OpensDocsOnStartup_WhenEnabled()
-    {
-        var options = new ScalarKiotaOptions
-        {
-            OutputPath = _testDirectory,
-            Languages = ["TypeScript"],
-            SdkName = "TestClient",
-            OpenDocsOnStartup = true,
-            DocumentationPath = "/custom-docs"
-        };
-
-        // Pre-create cache to skip generation - use TestMessageHandler.StandardSpecContent for hash match
-        var hash = SdkGenerationService.ComputeHash(TestMessageHandler.StandardSpecContent);
-        await File.WriteAllTextAsync(Path.Combine(_testDirectory, "openapi.json"), TestMessageHandler.StandardSpecContent);
-        await File.WriteAllTextAsync(Path.Combine(_testDirectory, ".spec.hash"), hash);
-        await File.WriteAllTextAsync(Path.Combine(_testDirectory, "config.js"), "export default {}");
-        await File.WriteAllTextAsync(Path.Combine(_testDirectory, "sdk.js"), "// bundled");
-
-        var mockRunner = new MockProcessRunner();
-        var sut = CreateService(options, mockRunner);
-
-        await sut.GenerateSdksIfNeededAsync();
-
-        await Assert.That(mockRunner.OpenUrlCalls.Count).IsEqualTo(1);
-        await Assert.That(mockRunner.OpenUrlCalls[0]).Contains("/custom-docs");
-    }
-
-    [Test]
-    [DisplayName("GenerateSdksIfNeededAsync_UsesDefaultDocsPath_WhenDocumentationPathNull")]
-    public async Task GenerateSdksIfNeededAsync_UsesDefaultDocsPath_WhenDocumentationPathNull()
-    {
-        var options = new ScalarKiotaOptions
-        {
-            OutputPath = _testDirectory,
-            Languages = ["TypeScript"],
-            SdkName = "TestClient",
-            OpenDocsOnStartup = true,
-            DocumentationPath = null
-        };
-
-        // Pre-create cache to skip generation - use TestMessageHandler.StandardSpecContent for hash match
-        var hash = SdkGenerationService.ComputeHash(TestMessageHandler.StandardSpecContent);
-        await File.WriteAllTextAsync(Path.Combine(_testDirectory, "openapi.json"), TestMessageHandler.StandardSpecContent);
-        await File.WriteAllTextAsync(Path.Combine(_testDirectory, ".spec.hash"), hash);
-        await File.WriteAllTextAsync(Path.Combine(_testDirectory, "config.js"), "export default {}");
-        await File.WriteAllTextAsync(Path.Combine(_testDirectory, "sdk.js"), "// bundled");
-
-        var mockRunner = new MockProcessRunner();
-        var sut = CreateService(options, mockRunner);
-
-        await sut.GenerateSdksIfNeededAsync();
-
-        await Assert.That(mockRunner.OpenUrlCalls.Count).IsEqualTo(1);
-        await Assert.That(mockRunner.OpenUrlCalls[0]).Contains("/api");
     }
 
     private SdkGenerationService CreateService(ScalarKiotaOptions? options = null, IProcessRunner? processRunner = null)

@@ -93,17 +93,17 @@ public class TestDataSources
         yield return () => Enumerable.Range(1, 20).Select(i => $"Language{i}").ToArray();
     }
 
-    public static IEnumerable<(string? outputPath, string? documentationPath)> PathConfigurations()
+    public static IEnumerable<string?> PathConfigurations()
     {
-        yield return (null, null);
-        yield return ("/absolute/path", "/docs");
-        yield return ("relative/path", "api");
-        yield return ("./current/path", "./docs");
-        yield return ("../parent/path", "../api");
-        yield return (@"C:\Windows\Path", "docs");
-        yield return ("/path with spaces/", "api docs");
-        yield return ("", "");
-        yield return ("/very/long/path/that/goes/deep/into/directory/structure", "documentation/api/v1");
+        yield return null;
+        yield return "/absolute/path";
+        yield return "relative/path";
+        yield return "./current/path";
+        yield return "../parent/path";
+        yield return @"C:\Windows\Path";
+        yield return "/path with spaces/";
+        yield return "";
+        yield return "/very/long/path/that/goes/deep/into/directory/structure";
     }
 
     public static IEnumerable<ScalarTheme> AllThemes()
@@ -124,7 +124,6 @@ public class TestDataSources
             .WithTheme(ScalarTheme.Mars)
             .WithSdkName("FullClient")
             .WithLanguages("TypeScript", "C#", "Python")
-            .WithOpenDocsOnStartup()
             .WithOutputPath("/custom/output");
 
         yield return () => new ScalarKiotaOptions
@@ -133,9 +132,7 @@ public class TestDataSources
             Theme = ScalarTheme.BluePlanet,
             SdkName = "DirectClient",
             Languages = ["Go", "Java"],
-            OpenDocsOnStartup = true,
             OutputPath = "/direct/path",
-            DocumentationPath = "/docs",
             BundleTypeScript = false
         };
     }

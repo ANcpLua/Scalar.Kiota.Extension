@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using Scalar.AspNetCore;
 
 namespace Scalar.Kiota.Extension;
@@ -27,19 +26,9 @@ public class ScalarKiotaOptions
     public string[] Languages { get; set; } = ["TypeScript"];
 
     /// <summary>
-    ///     Gets or sets whether to open the API documentation in a browser on startup. Defaults to false.
-    /// </summary>
-    public bool OpenDocsOnStartup { get; set; }
-
-    /// <summary>
     ///     Gets or sets the output directory for generated SDKs. If null, defaults to "wwwroot/.scalar-kiota".
     /// </summary>
     public string? OutputPath { get; set; }
-
-    /// <summary>
-    ///     Gets or sets the documentation URL path. If null, uses the pattern parameter from <see cref="ScalarKiotaExtensions.MapScalarWithKiota"/>.
-    /// </summary>
-    public string? DocumentationPath { get; set; }
 
     /// <summary>
     ///     Gets or sets whether to bundle TypeScript SDK with esbuild. Defaults to true.
@@ -87,16 +76,6 @@ public class ScalarKiotaOptions
     public ScalarKiotaOptions WithLanguages(params string[] languages)
     {
         if (languages.Length > 0) Languages = languages;
-        return this;
-    }
-
-    /// <summary>
-    ///     Configures the application to open the API documentation in a browser on startup.
-    /// </summary>
-    /// <returns>The current instance for method chaining.</returns>
-    public ScalarKiotaOptions WithOpenDocsOnStartup()
-    {
-        OpenDocsOnStartup = true;
         return this;
     }
 

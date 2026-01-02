@@ -17,9 +17,7 @@ public class ScalarKiotaOptionsTests
             await Assert.That(sut.Theme).IsEqualTo(ScalarTheme.Saturn);
             await Assert.That(sut.SdkName).IsEqualTo("ApiClient");
             await Assert.That(sut.Languages).IsEquivalentTo(["TypeScript"]);
-            await Assert.That(sut.OpenDocsOnStartup).IsFalse();
             await Assert.That(sut.OutputPath).IsNull();
-            await Assert.That(sut.DocumentationPath).IsNull();
             await Assert.That(sut.BundleTypeScript).IsTrue();
         }
     }
@@ -92,18 +90,6 @@ public class ScalarKiotaOptionsTests
     }
 
     [Test]
-    [DisplayName("WithOpenDocsOnStartup - Sets flag to true")]
-    public async Task WithOpenDocsOnStartup_SetsOpenDocsToTrue_WhenCalled()
-    {
-        var sut = new ScalarKiotaOptions();
-
-        var result = sut.WithOpenDocsOnStartup();
-
-        await Assert.That(sut.OpenDocsOnStartup).IsTrue();
-        await Assert.That(result).IsSameReferenceAs(sut);
-    }
-
-    [Test]
     [Arguments("/custom/output/path")]
     [Arguments("relative/path")]
     [Arguments("")]
@@ -127,7 +113,6 @@ public class ScalarKiotaOptionsTests
             .WithTheme(ScalarTheme.Mars)
             .WithSdkName("TestClient")
             .WithLanguages("C#", "Python", "Go")
-            .WithOpenDocsOnStartup()
             .WithOutputPath("/test/output");
 
         using (Assert.Multiple())
@@ -136,7 +121,6 @@ public class ScalarKiotaOptionsTests
             await Assert.That(sut.Theme).IsEqualTo(ScalarTheme.Mars);
             await Assert.That(sut.SdkName).IsEqualTo("TestClient");
             await Assert.That(sut.Languages).IsEquivalentTo(["C#", "Python", "Go"]);
-            await Assert.That(sut.OpenDocsOnStartup).IsTrue();
             await Assert.That(sut.OutputPath).IsEqualTo("/test/output");
         }
     }
@@ -153,9 +137,7 @@ public class ScalarKiotaOptionsTests
             Theme = sourceOptions.Theme,
             SdkName = sourceOptions.SdkName,
             Languages = sourceOptions.Languages,
-            OpenDocsOnStartup = sourceOptions.OpenDocsOnStartup,
             OutputPath = sourceOptions.OutputPath,
-            DocumentationPath = sourceOptions.DocumentationPath,
             BundleTypeScript = sourceOptions.BundleTypeScript
         };
 
@@ -165,9 +147,7 @@ public class ScalarKiotaOptionsTests
             await Assert.That(sut.Theme).IsEqualTo(sourceOptions.Theme);
             await Assert.That(sut.SdkName).IsEqualTo(sourceOptions.SdkName);
             await Assert.That(sut.Languages).IsEquivalentTo(sourceOptions.Languages);
-            await Assert.That(sut.OpenDocsOnStartup).IsEqualTo(sourceOptions.OpenDocsOnStartup);
             await Assert.That(sut.OutputPath).IsEqualTo(sourceOptions.OutputPath);
-            await Assert.That(sut.DocumentationPath).IsEqualTo(sourceOptions.DocumentationPath);
             await Assert.That(sut.BundleTypeScript).IsEqualTo(sourceOptions.BundleTypeScript);
         }
     }

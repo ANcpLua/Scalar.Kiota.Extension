@@ -26,9 +26,4 @@ internal sealed class DefaultProcessRunner : IProcessRunner
             throw new InvalidOperationException(
                 $"{fileName} {arguments} failed: {await process.StandardError.ReadToEndAsync()}");
     }
-
-    public void OpenUrl(string url)
-    {
-        Process.Start(new ProcessStartInfo { FileName = url, UseShellExecute = true });
-    }
 }

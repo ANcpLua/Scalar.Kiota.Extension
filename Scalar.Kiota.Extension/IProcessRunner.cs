@@ -9,9 +9,4 @@ public interface IProcessRunner
     /// Runs a process and waits for completion.
     /// </summary>
     Task RunAsync(string fileName, string arguments, string? workingDirectory = null);
-
-    /// <summary>
-    /// Opens a URL in the default browser.
-    /// </summary>
-    void OpenUrl(string url);
 }

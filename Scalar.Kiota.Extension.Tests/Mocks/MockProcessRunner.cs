@@ -6,7 +6,6 @@ namespace Scalar.Kiota.Extension.Tests.Mocks;
 internal sealed class MockProcessRunner : IProcessRunner
 {
     public List<(string FileName, string Arguments, string? WorkingDirectory)> RunCalls { get; } = [];
-    public List<string> OpenUrlCalls { get; } = [];
     public bool ShouldThrowOnRun { get; set; }
     public string? ThrowOnFileName { get; set; }
 
@@ -18,10 +17,5 @@ internal sealed class MockProcessRunner : IProcessRunner
             throw new InvalidOperationException($"Mock failure for {fileName}");
 
         return Task.CompletedTask;
-    }
-
-    public void OpenUrl(string url)
-    {
-        OpenUrlCalls.Add(url);
     }
 }

@@ -83,9 +83,6 @@ internal class SdkGenerationService : IHostedService
 
             Logger.LogInformation("SDK generation completed");
         }
-
-        if (Options.OpenDocsOnStartup)
-            OpenBrowser($"/{Options.DocumentationPath ?? "api"}");
     }
 
     public async Task<bool> IsCachedAndValidAsync(string currentHash)
@@ -262,10 +259,4 @@ internal class SdkGenerationService : IHostedService
 
     public string GetServerUrl() =>
         Server.Features.Get<IServerAddressesFeature>()!.Addresses.First();
-
-    internal void OpenBrowser(string path)
-    {
-        var url = $"{GetServerUrl()}{path}";
-        ProcessRunner.OpenUrl(url);
-    }
 }

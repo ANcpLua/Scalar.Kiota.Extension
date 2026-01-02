@@ -38,17 +38,14 @@ public class ScalarKiotaOptionsEdgeCaseTests
     [Test]
     [MethodDataSource(typeof(TestDataSources), nameof(TestDataSources.PathConfigurations))]
     [DisplayName("Path configurations - Handles various path formats")]
-    public async Task PathConfigurations_HandleVariousFormats(string? outputPath, string? documentationPath)
+    public async Task PathConfigurations_HandleVariousFormats(string? outputPath)
     {
         var options = new ScalarKiotaOptions();
 
         if (outputPath is not null)
             options.WithOutputPath(outputPath);
 
-        options.DocumentationPath = documentationPath;
-
         await Assert.That(options.OutputPath).IsEqualTo(outputPath);
-        await Assert.That(options.DocumentationPath).IsEqualTo(documentationPath);
     }
 
     [Test]
