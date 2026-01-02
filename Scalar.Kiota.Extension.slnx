@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="Scalar.Kiota.Extension.Tests/Scalar.Kiota.Extension.Tests.csproj" />
+  <Project Path="Scalar.Kiota.Extension/Scalar.Kiota.Extension.csproj" />
+  <Project Path="WebApiNativeAOT/WebApiNativeAOT.csproj" />
+</Solution>

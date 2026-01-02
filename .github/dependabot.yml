@@ -1,0 +1,18 @@
+version: 2
+updates:
+  - package-ecosystem: "nuget"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      aspnetcore:
+        patterns: ["Microsoft.AspNetCore*"]
+      scalar:
+        patterns: ["Scalar*"]
+      testing:
+        patterns: ["TUnit*", "coverlet*", "Microsoft.Testing*"]
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
