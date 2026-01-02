@@ -18,7 +18,7 @@ public class DefaultProcessRunnerTests
         var exception = await Assert.That(async () => await sut.RunAsync("sh", "-c \"exit 1\""))
             .Throws<InvalidOperationException>();
 
-        await Assert.That(exception?.Message).Contains("sh -c \"exit 1\" failed:");
+        await Assert.That(exception!.Message).Contains("sh -c \"exit 1\" failed:");
     }
 
     [Test]
@@ -30,7 +30,7 @@ public class DefaultProcessRunnerTests
                 await sut.RunAsync("sh", "-c \"echo 'Error message' >&2; exit 1\""))
             .Throws<InvalidOperationException>();
 
-        await Assert.That(exception?.Message).Contains("Error message");
+        await Assert.That(exception!.Message).Contains("Error message");
     }
 
     [Test]

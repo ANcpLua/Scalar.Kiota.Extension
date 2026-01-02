@@ -62,7 +62,7 @@ public class ScalarKiotaIntegrationTests : IAsyncDisposable
         var response = await client.GetAsync("/");
 
         await Assert.That((int)response.StatusCode).IsEqualTo(302);
-        await Assert.That(response.Headers.Location?.ToString()).IsEqualTo("/api");
+        await Assert.That(response.Headers.Location!.ToString()).IsEqualTo("/api");
     }
 
     [Test]
