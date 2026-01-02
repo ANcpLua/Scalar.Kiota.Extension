@@ -6,11 +6,7 @@
         <ModulePath>.*Scalar\.Kiota\.Extension\.dll$</ModulePath>
       </Include>
       <Exclude>
-        <ModulePath>.*Tests.*</ModulePath>
-        <ModulePath>.*TestAdapter.*</ModulePath>
-        <ModulePath>.*TUnit.*</ModulePath>
-        <ModulePath>.*Microsoft.*</ModulePath>
-        <ModulePath>.*System.*</ModulePath>
+        <ModulePath>.*\.Tests\.dll$</ModulePath>
       </Exclude>
     </ModulePaths>
     <EnableStaticNativeInstrumentation>True</EnableStaticNativeInstrumentation>
