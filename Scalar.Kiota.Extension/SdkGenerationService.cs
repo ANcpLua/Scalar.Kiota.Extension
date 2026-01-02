@@ -263,7 +263,8 @@ internal class SdkGenerationService : IHostedService
     public string GetServerUrl()
     {
         var addresses = Server.Features.Get<IServerAddressesFeature>()?.Addresses;
-        return addresses?.FirstOrDefault() ?? "http://localhost:5000";
+        return addresses?.FirstOrDefault()
+               ?? throw new InvalidOperationException("Server addresses not available. Ensure the server has started.");
     }
 
     internal void OpenBrowser(string path)

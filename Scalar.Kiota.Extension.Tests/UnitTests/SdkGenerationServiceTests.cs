@@ -81,15 +81,16 @@ public class SdkGenerationServiceTests
     }
 
     [Test]
-    [DisplayName("GetServerUrl_ReturnsDefault_WhenNoServerAddresses")]
-    public async Task GetServerUrl_ReturnsDefault_WhenNoServerAddresses()
+    [DisplayName("GetServerUrl_Throws_WhenNoServerAddresses")]
+    public async Task GetServerUrl_Throws_WhenNoServerAddresses()
     {
         var mockServer = new TestServer();
         mockServer.SetAddresses([]);
         var sut = CreateService(server: mockServer);
 
-        var url = sut.GetServerUrl();
-        await Assert.That(url).IsEqualTo("http://localhost:5000");
+        var exception = await Assert.That(() => sut.GetServerUrl())
+            .Throws<InvalidOperationException>();
+        await Assert.That(exception?.Message).Contains("Server addresses not available");
     }
 
     [Test]
