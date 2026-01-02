@@ -45,12 +45,8 @@ jobs:
             --coverage-settings ${{ github.workspace }}/coverage.runsettings
 
       - name: Upload coverage reports to Codecov
-        continue-on-error: true
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-        run: |
-          # Trim whitespace from token
-          CLEAN_TOKEN=$(echo -n "${CODECOV_TOKEN}" | tr -d '[:space:]')
-          curl -Os https://cli.codecov.io/latest/linux/codecov
-          chmod +x codecov
-          ./codecov upload-process -t "${CLEAN_TOKEN}" -f "${{ github.workspace }}/coverage.cobertura.xml" || echo "Codecov upload failed - check CODECOV_TOKEN secret"
+        uses: codecov/codecov-action@v4
+        with:
+          files: ${{ github.workspace }}/coverage.cobertura.xml
+          fail_ci_if_error: false
+          verbose: true
