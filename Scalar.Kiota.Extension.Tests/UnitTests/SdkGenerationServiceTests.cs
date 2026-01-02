@@ -88,9 +88,8 @@ public class SdkGenerationServiceTests
         mockServer.SetAddresses([]);
         var sut = CreateService(server: mockServer);
 
-        var exception = await Assert.That(() => sut.GetServerUrl())
+        await Assert.That(() => sut.GetServerUrl())
             .Throws<InvalidOperationException>();
-        await Assert.That(exception?.Message).Contains("Server addresses not available");
     }
 
     [Test]

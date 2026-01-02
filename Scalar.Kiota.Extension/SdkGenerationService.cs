@@ -260,12 +260,8 @@ internal class SdkGenerationService : IHostedService
         }
     }
 
-    public string GetServerUrl()
-    {
-        var addresses = Server.Features.Get<IServerAddressesFeature>()?.Addresses;
-        return addresses?.FirstOrDefault()
-               ?? throw new InvalidOperationException("Server addresses not available. Ensure the server has started.");
-    }
+    public string GetServerUrl() =>
+        Server.Features.Get<IServerAddressesFeature>()!.Addresses.First();
 
     internal void OpenBrowser(string path)
     {
