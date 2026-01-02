@@ -15,21 +15,13 @@ public class SdkGenerationIntegrationTests : IAsyncDisposable
         Directory.CreateDirectory(_testDirectory);
     }
 
-    public async ValueTask DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        await Task.Yield();
-
         if (Directory.Exists(_testDirectory))
-            try
-            {
-                Directory.Delete(_testDirectory, true);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Failed to delete test directory {_testDirectory}: {ex.Message}");
-            }
+            Directory.Delete(_testDirectory, true);
 
         GC.SuppressFinalize(this);
+        return ValueTask.CompletedTask;
     }
 
     [Test]
