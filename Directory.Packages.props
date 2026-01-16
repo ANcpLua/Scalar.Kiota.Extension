@@ -8,7 +8,7 @@
   <PropertyGroup>
     <DotNetVersion>10.0.2</DotNetVersion>
     <ScalarVersion>2.12.4</ScalarVersion>
-    <TUnitVersion>1.7.20</TUnitVersion>
+    <TUnitVersion>1.11.51</TUnitVersion>
   </PropertyGroup>
 
   <!-- Production Dependencies -->
@@ -21,7 +21,7 @@
   <ItemGroup Label="Testing">
     <PackageVersion Include="TUnit" Version="$(TUnitVersion)" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="$(DotNetVersion)" />
-    <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.1.0" />
+    <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.3.2" />
   </ItemGroup>
 
 </Project>
