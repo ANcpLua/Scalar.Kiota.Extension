@@ -7,7 +7,7 @@
   <!-- Version Variables -->
   <PropertyGroup>
     <DotNetVersion>10.0.12</DotNetVersion>
-    <ScalarVersion>2.17.2</ScalarVersion>
+    <ScalarVersion>2.17.3</ScalarVersion>
     <TUnitVersion>1.66.27</TUnitVersion>
   </PropertyGroup>
 
