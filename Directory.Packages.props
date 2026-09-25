@@ -8,7 +8,7 @@
   <PropertyGroup>
     <DotNetVersion>10.0.12</DotNetVersion>
     <ScalarVersion>2.17.5</ScalarVersion>
-    <TUnitVersion>1.66.27</TUnitVersion>
+    <TUnitVersion>1.69.16</TUnitVersion>
   </PropertyGroup>
 
   <!-- Production Dependencies -->
